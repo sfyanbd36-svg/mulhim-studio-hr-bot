@@ -40,6 +40,11 @@ BAD_TLDS = {
     "png", "jpg", "jpeg", "gif", "webp", "svg", "css", "js", "html",
     "php", "xml", "json", "md", "txt", "pdf", "com/tr", "w3",
 }
+TYPO_TLDS = ("con", "cm", "comm", "coo", "net.uk", "orh")
+SOCIAL_MARKS = (
+    "instagram", "facebook", "tiktok", "snapchat", "twitter",
+    "youtube", "whatsapp", "telegram", "linkedin",
+)
 BAD_DOMAINS = (
     "example.", "w3.org", "schema.org", "googleapis", "gstatic",
     "blogger.com", "feedburner", "sentry", "localhost", "wordpress",
@@ -69,9 +74,15 @@ def clean_email(raw):
     local = email.split("@", 1)[0]
     if domain.endswith(tuple(BAD_TLDS)):
         return None
+    if any(domain.endswith("." + t) or domain == t for t in TYPO_TLDS):
+        return None
     if any(bad in domain for bad in BAD_DOMAINS):
         return None
     if local.startswith("jobsiq") or "ijobs" in local or local.startswith("noreply"):
+        return None
+    if local.startswith("www.") or any(mark in local for mark in SOCIAL_MARKS):
+        return None
+    if any(mark in domain for mark in SOCIAL_MARKS):
         return None
     return email
 

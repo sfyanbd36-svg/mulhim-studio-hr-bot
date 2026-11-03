@@ -15,6 +15,7 @@ BASE = Path(__file__).resolve().parent.parent
 COMPANIES_CSV = BASE / "outreach" / "companies.csv"
 TEMPLATE_FILE = BASE / "outreach" / "email_template.txt"
 SENT_LOG = BASE / "outreach" / "sent.csv"
+DEAD_LIST = BASE / "outreach" / "dead_emails.txt"
 
 
 def load_env():
@@ -67,10 +68,17 @@ def send_one(to_addr, subject, body):
 
 
 def already_sent():
-    if not SENT_LOG.exists():
-        return set()
-    with SENT_LOG.open(encoding="utf-8", newline="") as handle:
-        return {row["email"].strip().lower() for row in csv.DictReader(handle)}
+    known = set()
+    if SENT_LOG.exists():
+        with SENT_LOG.open(encoding="utf-8", newline="") as handle:
+            known |= {row["email"].strip().lower() for row in csv.DictReader(handle)}
+    if DEAD_LIST.exists():
+        known |= {
+            line.strip().lower()
+            for line in DEAD_LIST.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        }
+    return known
 
 
 def log_sent(email, company):

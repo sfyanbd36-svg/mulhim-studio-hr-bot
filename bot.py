@@ -4939,15 +4939,15 @@ if __name__ == "__main__":
     import time as sleep_time
 
     ensure_curated_company()
-    application = build_application()
-    register_handlers(application)
     print(STUDIO_NAME + " HR Bot is running...")
     while True:
         try:
+            application = build_application()
+            register_handlers(application)
             application.run_polling(allowed_updates=Update.ALL_TYPES)
             break
         except KeyboardInterrupt:
             break
         except Exception as exc:
-            logger.error("Polling stopped (%s), restarting in 30s", exc, exc_info=True)
+            logger.error("Polling stopped (%s), rebuilding in 30s", exc, exc_info=True)
             sleep_time.sleep(30)
