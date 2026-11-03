@@ -18,3 +18,7 @@ marketing/
 deploy/
 outreach/*.json
 outreach/*.html
+outreach/dead_emails.txt
+.pytest_cache/
+README.public.md
+.gitignore.public
